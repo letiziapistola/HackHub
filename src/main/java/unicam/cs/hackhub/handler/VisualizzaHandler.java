@@ -1,5 +1,6 @@
 package unicam.cs.hackhub.handler;
 
+import org.springframework.transaction.annotation.Transactional;
 import unicam.cs.hackhub.boundary.dto.*;
 import unicam.cs.hackhub.domain.implementazione.*;
 import unicam.cs.hackhub.boundary.dto.*;
@@ -127,6 +128,7 @@ public class VisualizzaHandler {
      *
      * @return la lista di hackathon dto
      */
+    @Transactional(readOnly = true)
     public List<InfoHackathonDTO> viewInfoHackathon() {
         List<Hackathon> listHackathon = repositoryHackathon.findAll();
         List<InfoHackathonDTO> listInfoHackathonDTO = new ArrayList<>();
