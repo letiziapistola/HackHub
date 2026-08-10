@@ -1,5 +1,6 @@
 package unicam.cs.hackhub.boundary.dto;
 
+import unicam.cs.hackhub.domain.StatoEnum;
 import unicam.cs.hackhub.domain.implementazione.statePattern.StatoHackathon;
 import jakarta.validation.constraints.*;
 
@@ -18,7 +19,7 @@ public record InfoHackathonDTO(
         @Max(6) @Min(3) int teamMax,
         @NotBlank String regolamento,
         @NotNull LocalDateTime scadenzaIscrizioni,
-        @NotNull StatoHackathon stato,
+        @NotNull StatoEnum stato,
         int numeroTeamIscritti,
         @Max(40) int maxIscrizioni,
         int postiRimanenti,
