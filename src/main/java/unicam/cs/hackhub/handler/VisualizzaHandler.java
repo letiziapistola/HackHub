@@ -2,14 +2,12 @@ package unicam.cs.hackhub.handler;
 
 import org.springframework.transaction.annotation.Transactional;
 import unicam.cs.hackhub.boundary.dto.*;
-import unicam.cs.hackhub.domain.implementazione.*;
-import unicam.cs.hackhub.boundary.dto.*;
+import unicam.cs.hackhub.domain.RuoloStaff;
 import unicam.cs.hackhub.domain.implementazione.*;
 import unicam.cs.hackhub.eccezioni.ConflictException;
 import unicam.cs.hackhub.eccezioni.NotFoundException;
 import unicam.cs.hackhub.repository.*;
 import org.springframework.stereotype.Service;
-import unicam.cs.hackhub.repository.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -133,13 +131,35 @@ public class VisualizzaHandler {
         List<Hackathon> listHackathon = repositoryHackathon.findAll();
         List<InfoHackathonDTO> listInfoHackathonDTO = new ArrayList<>();
         for (Hackathon h : listHackathon) {
-            int numeroTeamIscritti = h.getIscrizioni().size();
-            int postiRimanenti = h.getMaxIscrizioni() - numeroTeamIscritti;
-            listInfoHackathonDTO.add(new InfoHackathonDTO(h.getIdHackathon(), h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().getDataFine(), h.getLuogo(),
-                    h.getPremio(), h.getTeamMin(), h.getTeamMax(), h.getRegolamento(), h.getScadenzaIscrizioni(),
-                    h.getStatoEnum(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti));
+            InfoHackathonDTO infoHackathon = creaHackathon(h);
+            listInfoHackathonDTO.add(infoHackathon);
         }
         return listInfoHackathonDTO;
+    }
+
+    private InfoHackathonDTO creaHackathon(Hackathon h) {
+        int numeroTeamIscritti = h.getIscrizioni().size();
+        int postiRimanenti = h.getMaxIscrizioni() - numeroTeamIscritti;
+        List<Staff> staff = h.getStaff();
+        String organizzatore = ottieniNomeStaff(staff, RuoloStaff.ORGANIZZATORE);
+        List<String> mentori = new ArrayList<>();
+        List<Staff> staffMentori = staff.stream().filter(s -> s.getRuolo() == RuoloStaff.MENTORE).toList();
+        for (Staff s : staffMentori) {
+            mentori.add(s.getUtente().getNomeUtente());
+        }
+        String giudice = ottieniNomeStaff(staff, RuoloStaff.GIUDICE);
+        return new InfoHackathonDTO(h.getIdHackathon(), h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().getDataFine(), h.getLuogo(),
+                h.getPremio(), h.getTeamMin(), h.getTeamMax(), h.getRegolamento(), h.getScadenzaIscrizioni(),
+                h.getStatoEnum(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti, giudice, mentori, organizzatore);
+    }
+
+    private String ottieniNomeStaff(List<Staff> staff, RuoloStaff ruolo) {
+        for (Staff s : staff) {
+            if (s.getRuolo() == ruolo) {
+                return s.getUtente().getNomeUtente();
+            }
+        }
+        throw new IllegalArgumentException("Staff con ruolo " + ruolo + " non trovato");
     }
 
     /**
@@ -151,10 +171,6 @@ public class VisualizzaHandler {
     public InfoHackathonDTO viewInfoHackathonById(String id) {
         Hackathon h = repositoryHackathon.findById(id).orElseThrow(() ->
                 new NotFoundException("Hackathon non trovato"));
-        int numeroTeamIscritti = h.getIscrizioni().size();
-        int postiRimanenti = h.getMaxIscrizioni() - numeroTeamIscritti;
-        return new InfoHackathonDTO(h.getIdHackathon(), h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().
-                getDataFine(), h.getLuogo(), h.getPremio(), h.getTeamMin(), h.getTeamMax(), h.getRegolamento(),
-                h.getScadenzaIscrizioni(), h.getStatoEnum(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti);
+        return creaHackathon(h);
     }
 }
