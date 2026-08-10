@@ -137,8 +137,7 @@ public class VisualizzaHandler {
             int postiRimanenti = h.getMaxIscrizioni() - numeroTeamIscritti;
             listInfoHackathonDTO.add(new InfoHackathonDTO(h.getIdHackathon(), h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().getDataFine(), h.getLuogo(),
                     h.getPremio(), h.getTeamMin(), h.getTeamMax(), h.getRegolamento(), h.getScadenzaIscrizioni(),
-                    h.getStatoEnum(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti,
-                    h.getRegolamento()));
+                    h.getStatoEnum(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti));
         }
         return listInfoHackathonDTO;
     }
@@ -156,7 +155,6 @@ public class VisualizzaHandler {
         int postiRimanenti = h.getMaxIscrizioni() - numeroTeamIscritti;
         return new InfoHackathonDTO(h.getIdHackathon(), h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().
                 getDataFine(), h.getLuogo(), h.getPremio(), h.getTeamMin(), h.getTeamMax(), h.getRegolamento(),
-                h.getScadenzaIscrizioni(), h.getStatoEnum(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti,
-                h.getRegolamento());
+                h.getScadenzaIscrizioni(), h.getStatoEnum(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti);
     }
 }
