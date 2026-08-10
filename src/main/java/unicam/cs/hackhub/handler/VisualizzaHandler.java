@@ -159,7 +159,7 @@ public class VisualizzaHandler {
                 return s.getUtente().getNomeUtente();
             }
         }
-        throw new IllegalArgumentException("Staff con ruolo " + ruolo + " non trovato");
+        return null;
     }
 
     /**
