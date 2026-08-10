@@ -135,11 +135,28 @@ public class VisualizzaHandler {
         for (Hackathon h : listHackathon) {
             int numeroTeamIscritti = h.getIscrizioni().size();
             int postiRimanenti = h.getMaxIscrizioni() - numeroTeamIscritti;
-            listInfoHackathonDTO.add(new InfoHackathonDTO(h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().getDataFine(), h.getLuogo(),
+            listInfoHackathonDTO.add(new InfoHackathonDTO(h.getIdHackathon(), h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().getDataFine(), h.getLuogo(),
                     h.getPremio(), h.getTeamMin(), h.getTeamMax(), h.getRegolamento(), h.getScadenzaIscrizioni(),
                     h.getStato(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti,
                     h.getRegolamento()));
         }
         return listInfoHackathonDTO;
+    }
+
+    /**
+     * Metodo che ritorna le informazioni pubbliche di un hackathon dato il suo id
+     * @param id l'id dell'hackathon di riferimento
+     * @return un oggetto InfoHackathonDTO contenente le informazioni pubbliche dell'hackathon
+     */
+    @Transactional(readOnly = true)
+    public InfoHackathonDTO viewInfoHackathonById(String id) {
+        Hackathon h = repositoryHackathon.findById(id).orElseThrow(() ->
+                new NotFoundException("Hackathon non trovato"));
+        int numeroTeamIscritti = h.getIscrizioni().size();
+        int postiRimanenti = h.getMaxIscrizioni() - numeroTeamIscritti;
+        return new InfoHackathonDTO(h.getIdHackathon(), h.getNome(), h.getPeriodo().getDataInizio(), h.getPeriodo().
+                getDataFine(), h.getLuogo(), h.getPremio(), h.getTeamMin(), h.getTeamMax(), h.getRegolamento(),
+                h.getScadenzaIscrizioni(), h.getStato(), numeroTeamIscritti, h.getMaxIscrizioni(), postiRimanenti,
+                h.getRegolamento());
     }
 }

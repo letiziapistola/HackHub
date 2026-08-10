@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record InfoHackathonDTO(
+        @NotBlank String id,
         @NotBlank String nome,
         @NotNull LocalDate dataInizio,
         @NotNull LocalDate dataFine,

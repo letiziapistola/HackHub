@@ -81,12 +81,23 @@ public class VisualizzaBoundary {
     }
 
     /**
-     * Metodo del boundary che ritorna le informazioni di un hackathon pubbliche
+     * Metodo del boundary che ritorna le informazioni pubbliche degli hackathon
      * @return la lista di dto
      */
     @GetMapping("/hackathon")
     public ResponseEntity<List<InfoHackathonDTO>> viewInfoHackathon() {
         List<InfoHackathonDTO> infoHackathon = handler.viewInfoHackathon();
+        return ResponseEntity.status(HttpStatus.OK).body(infoHackathon);
+    }
+
+    /**
+     * Metodo del boundary che ritorna le informazioni pubbliche di un hackathon specifico
+     * @param id l'id dell'hackathon di riferimento
+     * @return la lista di dto
+     */
+    @GetMapping("/hackathon/{id}")
+    public ResponseEntity<InfoHackathonDTO> viewInfoHackathonById(@PathVariable String id) {
+        InfoHackathonDTO infoHackathon = handler.viewInfoHackathonById(id);
         return ResponseEntity.status(HttpStatus.OK).body(infoHackathon);
     }
 }
