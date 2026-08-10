@@ -22,6 +22,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/autenticazione/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api/hackathon").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/hackathon/{id}").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(filtro, UsernamePasswordAuthenticationFilter.class)
