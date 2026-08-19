@@ -62,6 +62,6 @@ public class EffettuaAutenticazioneHandler {
         if (!passwordEncoder.matches(request.password(), utente.getPasswordHash()))
             throw new BadRequestException("Password errata");
         String token = servizioJwt.generaToken(utente);
-        return new AuthResponse(token, "Bearer");
+        return new AuthResponse(token, "Bearer", utente.getNomeUtente());
     }
 }

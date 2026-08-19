@@ -9,6 +9,7 @@ import jakarta.validation.constraints.*;
  */
 public record AuthResponse(
         @NotBlank String token,
-        @NotBlank String tipo
+        @NotBlank String tipo,
+        @NotBlank String nomeUtente
 ) {
 }
