@@ -184,11 +184,8 @@ public class GestisciTeamHandler {
         }
         return new TeamResponse(
                 team.getNome(),
-                team.getMembri().stream()
-                        .filter(m -> m.getRuolo() == RuoloTeam.LEADER)
-                        .findFirst()
-                        .orElse(null),
-                team.getMembri()
+                team.getMembri().stream().filter(m -> m.getRuolo() == RuoloTeam.LEADER).map(m -> m.getUtente().getNomeUtente()).findFirst().orElse(null),
+                team.getMembri().stream().map(m -> m.getUtente().getNomeUtente()).collect(Collectors.toList())
         );
     }
 
