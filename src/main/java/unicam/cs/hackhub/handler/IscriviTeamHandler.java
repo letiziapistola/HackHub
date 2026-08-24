@@ -75,6 +75,8 @@ public class IscriviTeamHandler {
 
         if (hackathon.getIscrizioni().size() >= hackathon.getMaxIscrizioni())
             throw new ConflictException("Il numero massimo di iscrizioni è già stato raggiunto");
+        if (repositoryIscrizioniTeam.existsByHackathonAndTeam(hackathon, team))
+            throw new ConflictException("Il team è già iscritto all'hackathon");
     }
 
     /**

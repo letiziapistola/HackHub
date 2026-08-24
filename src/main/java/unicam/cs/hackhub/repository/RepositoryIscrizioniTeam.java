@@ -36,4 +36,6 @@ public interface RepositoryIscrizioniTeam extends JpaRepository<IscrizioneTeam, 
     Optional<IscrizioneTeam> findByTeam(Team team);
 
     List<IscrizioneTeam> findAllByTeam(Team team);
+
+    boolean existsByHackathonAndTeam(Hackathon hackathon, Team team);
 }
