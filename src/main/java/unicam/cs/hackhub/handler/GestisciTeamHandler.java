@@ -1,5 +1,7 @@
 package unicam.cs.hackhub.handler;
 
+import jakarta.transaction.Transactional;
+import unicam.cs.hackhub.boundary.dto.TeamResponse;
 import unicam.cs.hackhub.domain.RuoloTeam;
 import unicam.cs.hackhub.domain.implementazione.Hackathon;
 import unicam.cs.hackhub.domain.implementazione.IscrizioneTeam;
@@ -16,6 +18,7 @@ import unicam.cs.hackhub.servizi.ServizioNotifiche;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static unicam.cs.hackhub.domain.TipoNotifica.*;
 
@@ -170,5 +173,30 @@ public class GestisciTeamHandler {
          for (MembroTeam m : leader.getTeam().getMembri()) {
             servizioNotifiche.creaNotifica(m.getUtente(), TRASFERIMENTO_LEADER, "Il membro " + membroTeam.getUtente().getNomeUtente() + " è stato nominato come nuovo leader del team.");
         }
+    }
+
+    @Transactional
+    public TeamResponse visualizzaTeam(String nomeUtente) {
+        MembroTeam membroTeam = repositoryMembriTeam.findByUtente_NomeUtente(nomeUtente).orElseThrow(() -> new NotFoundException("L'utente non è membro di nessun team"));
+        Team team = membroTeam.getTeam();
+        if (!team.getMembri().contains(membroTeam)) {
+            throw new ConflictException("L'utente non è membro di questo team");
+        }
+        return new TeamResponse(
+                team.getNome(),
+                team.getMembri().stream()
+                        .filter(m -> m.getRuolo() == RuoloTeam.LEADER)
+                        .findFirst()
+                        .orElse(null),
+                team.getMembri()
+        );
+    }
+
+    @Transactional
+    public List<String> visualizzaIscrizioniTeam(String nomeUtente) {
+        MembroTeam membroTeam = repositoryMembriTeam.findByUtente_NomeUtente(nomeUtente).orElseThrow(() -> new NotFoundException("L'utente non è membro di nessun team"));
+        Team team = membroTeam.getTeam();
+        List<IscrizioneTeam> iscrizioni = repositoryIscrizioniTeam.findAllByTeam(team);
+        return iscrizioni.stream().map(iscrizioneTeam -> iscrizioneTeam.getHackathon().getIdHackathon()).collect(Collectors.toList());
     }
 }

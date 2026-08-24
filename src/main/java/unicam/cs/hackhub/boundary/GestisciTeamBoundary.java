@@ -1,9 +1,12 @@
 package unicam.cs.hackhub.boundary;
 
+import unicam.cs.hackhub.boundary.dto.TeamResponse;
 import unicam.cs.hackhub.handler.GestisciTeamHandler;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/team")
@@ -74,5 +77,16 @@ public class GestisciTeamBoundary {
             @RequestParam String nomeMembro){
         handler.trasferisceRuoloLeader(nomeUtente, nomeMembro);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/mio")
+    public ResponseEntity<TeamResponse> visualizzaTeam(@AuthenticationPrincipal String nomeUtente){
+        TeamResponse teamResponse = handler.visualizzaTeam(nomeUtente);
+        return ResponseEntity.ok(teamResponse);
+    }
+
+    @GetMapping("/iscrizioni")
+    public ResponseEntity<List<String>> visualizzaIscrizioniTeam(@AuthenticationPrincipal String nomeUtente){
+        return ResponseEntity.ok(handler.visualizzaIscrizioniTeam(nomeUtente));
     }
 }
