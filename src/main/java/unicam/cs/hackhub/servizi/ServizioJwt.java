@@ -74,22 +74,19 @@ public class ServizioJwt {
      *
      * @param token  il token Jwt da validare
      * @param utente l'utente che prova l'autenticazione alla piattaforma
-     * @throws RuntimeException se viene lanciata un'eccezione
+     * @throws JwtException se il token non è valido, è scaduto o non appartiene all'utente
+     * @throws IllegalArgumentException se il token o l'utente sono nulli
      */
     public void validaToken(String token, Utente utente) {
         if (token == null || utente == null)
             throw new IllegalArgumentException("Token o utente passati nulli");
 
-        try {
-            Claims claims = Jwts.parser()
-                    .verifyWith(getSigningKey())
-                    .build()
-                    .parseSignedClaims(token)
-                    .getPayload();
-            if (!claims.getSubject().equals(utente.getNomeUtente()))
-                throw new JwtException("Token non corrispondente all'utente");
-        } catch (JwtException | IllegalArgumentException e) {
-            throw new RuntimeException("Token Jwt non valido o scaduto");
-        }
+        Claims claims = Jwts.parser()
+                .verifyWith(getSigningKey())
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
+        if (!utente.getNomeUtente().equals(claims.getSubject()))
+            throw new JwtException("Token non corrispondente all'utente");
     }
 }
