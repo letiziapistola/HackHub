@@ -1,5 +1,6 @@
 package unicam.cs.hackhub.handler;
 
+import unicam.cs.hackhub.boundary.dto.HackathonCreatedResponse;
 import unicam.cs.hackhub.boundary.dto.HackathonRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +50,7 @@ public class CreaHackathonHandler {
      * @param nomeUtente il nome utente dell'organizzatore che sta creando l'hackathon
      */
     @Transactional
-    public void avviaCreazioneHackathon(HackathonRequest request, String nomeUtente) {
+    public HackathonCreatedResponse avviaCreazioneHackathon(HackathonRequest request, String nomeUtente) {
         validazione(request, nomeUtente);
         HackathonBuilder builder = new HackathonBuilder();
         builder.reset();
@@ -57,6 +58,7 @@ public class CreaHackathonHandler {
         Hackathon hackathon = builder.getRisultato();
         Staff organizzatore = gestisciOrganizzatore(nomeUtente, hackathon);
         gestisciInvitiStaff(organizzatore, request.nomeMentori(), request.nomeGiudice());
+        return new HackathonCreatedResponse(hackathon.getIdHackathon(), hackathon.getNome());
     }
 
     /**

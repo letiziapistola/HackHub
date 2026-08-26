@@ -1,5 +1,6 @@
 package unicam.cs.hackhub.boundary;
 
+import unicam.cs.hackhub.boundary.dto.HackathonCreatedResponse;
 import unicam.cs.hackhub.boundary.dto.HackathonRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -30,12 +31,12 @@ public class CreaHackathonBoundary {
      * @return una nuova chiamata http
      */
     @PostMapping
-    public ResponseEntity<Void> avviaCreazioneHackathon(
+    public ResponseEntity<HackathonCreatedResponse> avviaCreazioneHackathon(
             @AuthenticationPrincipal String nomeUtente,
             @Valid @RequestBody HackathonRequest request
             ) {
-        handler.avviaCreazioneHackathon(request, nomeUtente);
-        return ResponseEntity.noContent().build();
+        HackathonCreatedResponse hackathonCreatedResponse = handler.avviaCreazioneHackathon(request, nomeUtente);
+        return ResponseEntity.ok(hackathonCreatedResponse);
     }
 
 }
