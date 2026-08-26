@@ -29,6 +29,8 @@ public class GestisceHackathonHandler {
     private final RepositoryHackathon repositoryHackathon;
     private final RepositoryIscrizioniTeam repositoryIscrizioniTeam;
     private final SistemaDiPagamentoMock sistemaDiPagamento;
+    private final RepositoryRichiesta repositoryRichiesta;
+    private final RepositoryInvitoStaff repositoryInvitoStaff;
 
     /**
      * Crea una nuova istanza di un handler per la gestione degli hackathon
@@ -37,7 +39,7 @@ public class GestisceHackathonHandler {
      * @param repositoryStaff   la repository dello staff
      * @param repositoryTeam    la repository dei team
      */
-    public GestisceHackathonHandler(ServizioNotifiche servizioNotifiche, RepositoryStaff repositoryStaff, RepositoryTeam repositoryTeam, RepositoryUtente repositoryUtente, RepositoryHackathon repositoryHackathon, RepositoryIscrizioniTeam repositoryIscrizioniTeam, SistemaDiPagamentoMock sistemaDiPagamento) {
+    public GestisceHackathonHandler(ServizioNotifiche servizioNotifiche, RepositoryStaff repositoryStaff, RepositoryTeam repositoryTeam, RepositoryUtente repositoryUtente, RepositoryHackathon repositoryHackathon, RepositoryIscrizioniTeam repositoryIscrizioniTeam, SistemaDiPagamentoMock sistemaDiPagamento, RepositoryRichiesta repositoryRichiesta, RepositoryInvitoStaff repositoryInvitoStaff) {
         this.servizioNotifiche = servizioNotifiche;
         this.repositoryStaff = repositoryStaff;
         this.repositoryTeam = repositoryTeam;
@@ -45,6 +47,8 @@ public class GestisceHackathonHandler {
         this.repositoryHackathon = repositoryHackathon;
         this.repositoryIscrizioniTeam = repositoryIscrizioniTeam;
         this.sistemaDiPagamento = sistemaDiPagamento;
+        this.repositoryRichiesta = repositoryRichiesta;
+        this.repositoryInvitoStaff = repositoryInvitoStaff;
     }
 
 
@@ -118,6 +122,7 @@ public class GestisceHackathonHandler {
                 servizioNotifiche.creaNotifica(m1.getUtente(), HACKATHON_CANCELLATO, "L'hackathon a cui eri iscritto è stato cancellato");
             }
         }
+        repositoryInvitoStaff.deleteAllByHackathon(hackathon);
         repositoryHackathon.delete(hackathon);
     }
 

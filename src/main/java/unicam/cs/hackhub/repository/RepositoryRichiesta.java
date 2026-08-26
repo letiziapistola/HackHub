@@ -1,5 +1,6 @@
 package unicam.cs.hackhub.repository;
 
+import unicam.cs.hackhub.domain.implementazione.Hackathon;
 import unicam.cs.hackhub.domain.implementazione.Richiesta;
 import unicam.cs.hackhub.domain.implementazione.Utente;
 import org.springframework.data.jpa.repository.JpaRepository;
