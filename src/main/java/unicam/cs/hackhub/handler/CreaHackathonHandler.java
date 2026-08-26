@@ -9,6 +9,8 @@ import unicam.cs.hackhub.domain.implementazione.Hackathon;
 import unicam.cs.hackhub.domain.implementazione.Periodo;
 import unicam.cs.hackhub.domain.implementazione.Staff;
 import unicam.cs.hackhub.domain.implementazione.Utente;
+import unicam.cs.hackhub.eccezioni.BadRequestException;
+import unicam.cs.hackhub.eccezioni.ConflictException;
 import unicam.cs.hackhub.eccezioni.ForbiddenException;
 import unicam.cs.hackhub.eccezioni.NotFoundException;
 import unicam.cs.hackhub.repository.RepositoryHackathon;
@@ -34,8 +36,7 @@ public class CreaHackathonHandler {
      * @param repositoryHackathon la repository per salvare l'hackathon creato
      * @param servizioNotifiche   il servizio per inviare le notifiche agli utenti invitati come giudici e mentori
      */
-    public CreaHackathonHandler(RepositoryUtente repositoryUtenti, RepositoryHackathon
-            repositoryHackathon, ServizioNotifiche servizioNotifiche) {
+    public CreaHackathonHandler(RepositoryUtente repositoryUtenti, RepositoryHackathon repositoryHackathon, ServizioNotifiche servizioNotifiche) {
         this.repositoryUtenti = repositoryUtenti;
         this.repositoryHackathon = repositoryHackathon;
         this.servizioNotifiche = servizioNotifiche;
@@ -69,23 +70,22 @@ public class CreaHackathonHandler {
      */
     private void validazione(HackathonRequest request, String nomeUtente) {
         if (repositoryHackathon.existsByNome(request.nome())) {
-            throw new ForbiddenException("Esiste già un hackathon con questo nome");
+            throw new ConflictException("Esiste già un hackathon con questo nome");
         }
-        if (repositoryUtenti.findByNomeUtente(request.nomeGiudice()).isEmpty() || request.nomeMentori().stream().
-                anyMatch(nome -> repositoryUtenti.findByNomeUtente(nome).isEmpty())) {
+        if (repositoryUtenti.findByNomeUtente(request.nomeGiudice()).isEmpty() || request.nomeMentori().stream().anyMatch(nome -> repositoryUtenti.findByNomeUtente(nome).isEmpty())) {
             throw new NotFoundException("Uno o più utenti specificati non esistono");
         }
         if (request.nomeGiudice().equals(nomeUtente) || request.nomeMentori().contains(nomeUtente)) {
-            throw new ForbiddenException("L'organizzatore non può essere anche giudice o mentore");
+            throw new BadRequestException("L'organizzatore non può essere anche giudice o mentore");
         }
         if (request.nomeMentori().contains(request.nomeGiudice())) {
-            throw new ForbiddenException("Un utente non può essere sia giudice che mentore");
+            throw new BadRequestException("Un utente non può essere sia giudice che mentore");
         }
         if (request.nomeMentori().size() != request.nomeMentori().stream().distinct().count()) {
-            throw new ForbiddenException("Non possono esserci nomi duplicati tra i mentori");
+            throw new BadRequestException("Non possono esserci nomi duplicati tra i mentori");
         }
         if (!request.scadenzaIscrizioni().isBefore(request.dataInizio().atStartOfDay())) {
-            throw new ForbiddenException("La scadenza delle iscrizioni deve essere prima dell'inizio dell'hackathon");
+            throw new BadRequestException("La scadenza delle iscrizioni deve essere prima dell'inizio dell'hackathon");
         }
     }
 
@@ -112,8 +112,8 @@ public class CreaHackathonHandler {
      * Gestione degli inviti allo staff per un hackathon
      *
      * @param organizzatore l'utente che ha creato l'hackathon
-     * @param nomiMentori i nomi degli utenti che si vogliono invitare come mentori
-     * @param nomeGiudice il nome dell'utente che si vuole invitare come giudice
+     * @param nomiMentori   i nomi degli utenti che si vogliono invitare come mentori
+     * @param nomeGiudice   il nome dell'utente che si vuole invitare come giudice
      */
     private void gestisciInvitiStaff(Staff organizzatore, List<String> nomiMentori, String nomeGiudice) {
         Map<Utente, RuoloStaff> destinatari = gestisciStaff(nomiMentori, nomeGiudice);
@@ -131,10 +131,8 @@ public class CreaHackathonHandler {
      * @return una nuova HashMap che associa l'utente esistente al suo ruolo
      */
     private Map<Utente, RuoloStaff> gestisciStaff(List<String> nomiMentori, String nomeGiudice) {
-        List<Utente> mentori = nomiMentori.stream().map(nome -> repositoryUtenti.findByNomeUtente(nome).orElseThrow(() ->
-                new NotFoundException("L'utente specificato non esiste: " + nome))).toList();
-        Utente giudice = repositoryUtenti.findByNomeUtente(nomeGiudice).orElseThrow(() ->
-                new NotFoundException("L'utente specificato non esiste: " + nomeGiudice));
+        List<Utente> mentori = nomiMentori.stream().map(nome -> repositoryUtenti.findByNomeUtente(nome).orElseThrow(() -> new NotFoundException("L'utente specificato non esiste: " + nome))).toList();
+        Utente giudice = repositoryUtenti.findByNomeUtente(nomeGiudice).orElseThrow(() -> new NotFoundException("L'utente specificato non esiste: " + nomeGiudice));
         return new HashMap<>() {{
             put(giudice, RuoloStaff.GIUDICE);
             mentori.forEach(mentore -> put(mentore, RuoloStaff.MENTORE));
@@ -148,8 +146,7 @@ public class CreaHackathonHandler {
      * @param hackathon  l'hackathon
      */
     private Staff gestisciOrganizzatore(String nomeUtente, Hackathon hackathon) {
-        Utente organizzatore = repositoryUtenti.findByNomeUtente(nomeUtente).orElseThrow(() ->
-                new NotFoundException("L' utente non esiste: " + nomeUtente));
+        Utente organizzatore = repositoryUtenti.findByNomeUtente(nomeUtente).orElseThrow(() -> new NotFoundException("L' utente non esiste: " + nomeUtente));
         Staff staffOrganizzatore = new Staff(organizzatore, RuoloStaff.ORGANIZZATORE);
         hackathon.aggiungiStaff(staffOrganizzatore);
         repositoryHackathon.save(hackathon);
