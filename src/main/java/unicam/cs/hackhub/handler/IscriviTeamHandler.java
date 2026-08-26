@@ -16,6 +16,8 @@ import unicam.cs.hackhub.repository.RepositoryMembriTeam;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class IscriviTeamHandler {
     private final RepositoryMembriTeam repositoryMembriTeam;
@@ -77,6 +79,11 @@ public class IscriviTeamHandler {
             throw new ConflictException("Il numero massimo di iscrizioni è già stato raggiunto");
         if (repositoryIscrizioniTeam.existsByHackathonAndTeam(hackathon, team))
             throw new ConflictException("Il team è già iscritto all'hackathon");
+        List<String> idMembriTeam = team.getMembri().stream().map(MembroTeam::getUtente).map(Utente::getIdUtente).toList();
+        List<String> idMembriStaff = hackathon.getStaff().stream().map(Staff::getUtente).map(Utente::getIdUtente).toList();
+        if (idMembriStaff.stream().anyMatch(idMembriTeam::contains)) {
+            throw new ConflictException("Un membro del team è anche membro dello staff dell'hackathon");
+        }
     }
 
     /**
